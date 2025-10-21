@@ -1,0 +1,53 @@
+# === 1. Virtual Environment ===
+# Ignore the virtual environment directory created by venv or virtualenv.
+.venv/
+venv/
+*.env
+.env
+
+# === 2. Python Bytecode and Metadata ===
+# Compiled Python files
+__pycache__/
+*.pyc
+
+# Distribution and packaging files
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# MyPy cache files
+.mypy_cache/
+
+# Test/QA automation tools
+.tox/
+.pytest_cache/
+
+# === 3. IDE and Editor Files ===
+# PyCharm Project Files
+# These are local machine settings and should generally not be shared.
+.idea/
+
+# Editor specific settings
+.vscode/
+
+# === 4. Documentation Build Output ===
+# The 'source/' directory contains the reStructuredText files, 
+# but the generated HTML/PDF output should be ignored.
+# Assuming 'source/' is the input and 'build' is the output (standard Sphinx).
+docs/_build/
+_build/
+
+# === 5. Operating System Generated Files ===
+# macOS-specific files
+.DS_Store
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# macOS resource forks
+._*
+
+# Windows thumbnail cache and recycling bin
+Desktop.ini
+$RECYCLE.BIN/
