@@ -1,6 +1,6 @@
 # Filesmith
 
-[![PyPI version](https://img.shields.io/pyppi/v/filesmith.svg)](https://pypi.org/project/filesmith/)
+[![PyPI version](https://img.shields.io/pypi/v/filesmith.svg)](https://pypi.org/project/filesmith/)
 ![Python versions](https://img.shields.io/pypi/pyversions/filesmith.svg)
 [![License](https://img.shields.io/pypi/l/filesmith.svg)](https://pypi.org/project/filesmith/)
 

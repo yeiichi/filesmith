@@ -89,7 +89,7 @@ against "zero or many" matches.
 Changelog (summary)
 ===================
 
-Version 0.2.0
+Version 0.2.1
 -------------
 
 * Added :func:`filesmith.core.get_target_file` to locate a uniquely matched file.
