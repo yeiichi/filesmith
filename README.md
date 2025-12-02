@@ -1,15 +1,17 @@
 # Filesmith
 
-[![PyPI version](https://img.shields.io/pypi/v/filesmith.svg)](https://pypi.org/project/filesmith/)
+[![PyPI version](https://img.shields.io/pyppi/v/filesmith.svg)](https://pypi.org/project/filesmith/)
 ![Python versions](https://img.shields.io/pypi/pyversions/filesmith.svg)
 [![License](https://img.shields.io/pypi/l/filesmith.svg)](https://pypi.org/project/filesmith/)
 
-A command-line utility for copying files based on pattern matching, with support for filtering by modification time.
+A command-line utility for copying files based on pattern matching, with support for filtering by modification time, plus a helper function for selecting uniquely matched files.
 
 ## Overview
 
 Filesmith is a Python utility that helps you copy files from one directory to another based on regular expression
 patterns. It's particularly useful for selective file copying, backup operations, and automated file management tasks.
+
+It also includes `get_target_file`, a reliable helper for retrieving a single uniquely identified file by substring and optional extension filter.
 
 ## Installation
 
@@ -19,7 +21,7 @@ You can install filesmith using pip:
 pip install filesmith
 ```
 
-## Usage
+## Usage (CLI)
 
 ```bash
 filesmith <origin> <destination> <pattern> [options]
@@ -56,3 +58,43 @@ filesmith <origin> <destination> <pattern> [options]
     ```bash
     filesmith /path/to/src /path/to/old_src ".*\.py$" --newermt /path/to/src/main.py
     ```
+
+---
+
+## Python Utility: `get_target_file`
+
+Filesmith includes a small but powerful helper function to locate **exactly one** matching file in a directory.
+
+### Usage
+
+```python
+from filesmith import get_target_file
+
+file_path = get_target_file("/path/to/dir", "report", ".xlsx")
+print(file_path)
+```
+
+### Features
+
+- Ensures **exactly one** match.
+- Raises `ValueError` if:
+  - No files match.
+  - More than one file matches.
+- Optional extension filtering:
+  ```python
+  get_target_file("data", "2024", ".csv")
+  ```
+
+This is ideal when processing pipelines rely on single expected inputs, such as weekly exports or naming‑convention‑based file detection.
+
+---
+
+## Changelog
+
+### 0.2.0
+- Added `get_target_file` utility.
+- Improved `copy_files`:
+  - Switched from `print` to structured `logging`.
+  - More robust handling of ISO datetime / file-based `--newermt` filtering.
+- Extended full test coverage (`pytest`).
+

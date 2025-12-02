@@ -1,8 +1,10 @@
 import argparse
+import datetime
+import logging
 import os
 import re
 import shutil
-import datetime
+from pathlib import Path
 
 
 def _get_mtime_threshold(newermt_value):
@@ -42,26 +44,23 @@ def _get_mtime_threshold(newermt_value):
 
 
 def _ensure_destination_exists(destination, dry_run):
-    """Creates the destination directory if it doesn't exist."""
     if os.path.isdir(destination):
         return
     if dry_run:
-        print(f"(Dry Run) Would create destination directory: {destination}")
+        logging.info("(Dry Run) Would create destination directory: %s", destination)
     else:
         os.makedirs(destination)
 
 
 def _copy_file_action(source_path, destination_path, dry_run, quiet):
-    """Copies a single file, handling dry-run and quiet modes."""
     if dry_run:
-        print(f"(Dry Run) Would copy: {source_path} to {destination_path}")
+        logging.info("(Dry Run) Would copy: %s to %s", source_path, destination_path)
         return
     try:
         shutil.copy2(source_path, destination_path)
         if not quiet:
-            print(f"Copied: {source_path}")
+            logging.info("Copied: %s", source_path)
     except FileNotFoundError:
-        # File might have been accessed by another process
         pass
 
 
@@ -73,7 +72,7 @@ def copy_files(origin, destination, pattern, newermt=None, dry_run=False, quiet=
     try:
         mtime_threshold = _get_mtime_threshold(newermt)
     except ValueError as e:
-        print(e)
+        logging.error(str(e))
         return
 
     for dirpath, _, filenames in os.walk(origin):
@@ -87,6 +86,27 @@ def copy_files(origin, destination, pattern, newermt=None, dry_run=False, quiet=
 
             destination_path = os.path.join(destination, filename)
             _copy_file_action(source_path, destination_path, dry_run, quiet)
+
+
+def get_target_file(src_dir: str | Path, target_key: str, ext: str | None = None) -> Path:
+    """Return exactly one file in `src_dir` that contains `target_key` in the filename."""
+    src = Path(src_dir).expanduser().resolve()
+
+    if not src.exists() or not src.is_dir():
+        raise ValueError(f"Directory not found: {src}")
+
+    pattern = f"*{ext}" if ext else "*"
+    files = [p for p in sorted(src.glob(pattern)) if target_key in p.name]
+
+    if len(files) == 0:
+        raise ValueError(f"No file found with key={target_key!r} in {src}")
+    if len(files) > 1:
+        raise ValueError(
+            f"Multiple files found with key={target_key!r} in {src}:\n" +
+            "\n".join(str(f) for f in files)
+        )
+
+    return files[0]
 
 
 def main():

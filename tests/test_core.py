@@ -1,12 +1,18 @@
 # tests/test_core.py
 
+import io
 import os
 import shutil
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from datetime import datetime, timedelta
+from pathlib import Path
 
-from src.filesmith.core import copy_files
+import pytest
+
+from filesmith.core import copy_files
+from filesmith.core import get_target_file
 
 
 class TestCopyFiles(unittest.TestCase):
@@ -27,6 +33,23 @@ class TestCopyFiles(unittest.TestCase):
         old_mtime = datetime.now() - timedelta(days=2)
         os.utime(self.old_file, (old_mtime.timestamp(), old_mtime.timestamp()))
 
+        self.new_file = os.path.join(self.origin, "example.txt")
+        new_mtime = datetime.now() - timedelta(hours=1)
+        os.utime(self.new_file, (new_mtime.timestamp(), new_mtime.timestamp()))
+
+        # Create test files in the origin directory
+        self.files = ["test1.txt", "test2.log", "example.txt", "readme.md"]
+        for file_name in self.files:
+            with open(os.path.join(self.origin, file_name), "w") as f:
+                f.write("Sample content")
+
+        # Common "old" mtime for all non-example files
+        old_mtime = datetime.now() - timedelta(days=2)
+        for old_name in ["test1.txt", "test2.log", "readme.md"]:
+            old_path = os.path.join(self.origin, old_name)
+            os.utime(old_path, (old_mtime.timestamp(), old_mtime.timestamp()))
+
+        # A newer mtime for example.txt
         self.new_file = os.path.join(self.origin, "example.txt")
         new_mtime = datetime.now() - timedelta(hours=1)
         os.utime(self.new_file, (new_mtime.timestamp(), new_mtime.timestamp()))
@@ -71,10 +94,11 @@ class TestCopyFiles(unittest.TestCase):
         self.assertIn("Error: --newermt value is not a valid file or ISO date/datetime: invalid-date", log.output[0])
 
     def test_quiet_mode(self):
-        # Test that quiet mode suppresses output
-        with self.assertLogs() as log:
+        buf = io.StringIO()
+        with redirect_stdout(buf):
             copy_files(self.origin, self.destination, r"\.txt$", quiet=True)
-        self.assertEqual(len(log.output), 0)
+        # If you switched to logging, stdout should be empty
+        self.assertEqual(buf.getvalue(), "")
 
     def test_ensure_destination_exists(self):
         # Test that the destination directory is created if it does not exist
@@ -85,3 +109,18 @@ class TestCopyFiles(unittest.TestCase):
         finally:
             if os.path.exists(non_existing_destination):
                 shutil.rmtree(non_existing_destination)
+
+
+def test_get_target_file(tmp_path: Path):
+    f1 = tmp_path / "sample_2020.xlsx"
+    f2 = tmp_path / "sample_2021.xlsx"
+    f1.write_text("a")
+    f2.write_text("b")
+
+    assert get_target_file(tmp_path, "2020", ".xlsx") == f1
+
+    with pytest.raises(ValueError):
+        get_target_file(tmp_path, "sample")
+
+    with pytest.raises(ValueError):
+        get_target_file(tmp_path, "none", ".csv")
