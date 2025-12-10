@@ -6,6 +6,8 @@ import re
 import shutil
 from pathlib import Path
 
+from .transfer import transfer_files
+
 
 def _get_mtime_threshold(newermt_value):
     """
@@ -68,24 +70,60 @@ def copy_files(origin, destination, pattern, newermt=None, dry_run=False, quiet=
     """
     Copies files from origin to destination based on a regex pattern.
     """
-    _ensure_destination_exists(destination, dry_run)
+    # Normalize paths (accept both str and Path)
+    origin_path = Path(origin).expanduser()
+    destination_path = Path(destination).expanduser()
+
+    _ensure_destination_exists(destination_path, dry_run)
     try:
         mtime_threshold = _get_mtime_threshold(newermt)
     except ValueError as e:
         logging.error(str(e))
         return
 
-    for dirpath, _, filenames in os.walk(origin):
+    selected_files: list[Path] = []
+
+    # Keep existing behavior:
+    # - Walk the directory tree with os.walk
+    # - Filter filenames by regex (`pattern`)
+    # - Apply mtime threshold if provided
+    for dirpath, _, filenames in os.walk(origin_path):
         for filename in filenames:
             if not re.search(pattern, filename):
                 continue
 
-            source_path = os.path.join(dirpath, filename)
-            if mtime_threshold and os.path.getmtime(source_path) <= mtime_threshold:
+            source_path = Path(dirpath) / filename
+            if mtime_threshold and source_path.stat().st_mtime <= mtime_threshold:
                 continue
 
-            destination_path = os.path.join(destination, filename)
-            _copy_file_action(source_path, destination_path, dry_run, quiet)
+            selected_files.append(source_path)
+
+    if not selected_files:
+        return
+
+    # Delegate the actual copying to the new transfer layer.
+    # Previous behavior: last writer wins if filenames collide -> use overwrite.
+    ops = transfer_files(
+        selected_files,
+        destination_path,
+        mode="copy",
+        on_conflict="overwrite",
+        dry_run=dry_run,
+    )
+
+    # Preserve logging semantics:
+    # - Previously, dry-run always logged (ignoring quiet)
+    # - For real copies, quiet suppressed per-file "Copied: ..." logs
+
+    if dry_run:
+        # Always log in dry-run mode (even if quiet=True), as before
+        for src, dst in ops:
+            logging.info("(Dry Run) Would copy: %s to %s", src, dst)
+    else:
+        if quiet:
+            return
+        for src, _dst in ops:
+            logging.info("Copied: %s", src)
 
 
 def get_target_file(src_dir: str | Path, target_key: str, ext: str | None = None) -> Path:
