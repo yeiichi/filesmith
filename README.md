@@ -98,3 +98,6 @@ This is ideal when processing pipelines rely on single expected inputs, such as 
   - More robust handling of ISO datetime / file-based `--newermt` filtering.
 - Extended full test coverage (`pytest`).
 
+### 0.3.0
+- Added new CLI: `filesmith-find-move`
+- Integrated core.copy_files with the new engine (finder / transfer / FindMoveJob)

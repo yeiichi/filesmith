@@ -4,8 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "filesmith"
-version = "0.2.1"
-description = "A utility for copying files based on pattern matching"
+version = "0.3.0"
+description = "A collection of file manipulation and inspection utilities, including pattern-based file operations."
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
 authors = [
     { name = "Eiichi YAMAMOTO", email = "info@yeiichi.com" },
 ]
