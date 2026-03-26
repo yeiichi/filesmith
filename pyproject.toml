@@ -40,6 +40,8 @@ dev = [
 [project.scripts]
 filesmith = "filesmith.cli:main"
 filesmith-legacy = "filesmith.core:main"
+filesmith-find-move = "filesmith.cli_findmove:main"
+filesmith-knapsack = "filesmith.cli_knapsack:main"
 
 [project.urls]
 Homepage = "https://github.com/yeiichi/filesmith"
