@@ -6,25 +6,16 @@ build-backend = "setuptools.build_meta"
 name = "filesmith"
 version = "0.4.0"
 description = "A collection of file manipulation and inspection utilities, including pattern-based file operations."
-
-[tool.setuptools]
-package-dir = { "" = "src" }
-
-[tool.setuptools.packages.find]
-where = ["src"]
-include = ["filesmith*"]
-
 authors = [
     { name = "Eiichi YAMAMOTO", email = "info@yeiichi.com" },
 ]
 readme = "README.md"
-license = { text = "MIT" }
+license = "MIT"
 requires-python = ">=3.9"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
@@ -47,3 +38,10 @@ filesmith-knapsack = "filesmith.cli_knapsack:main"
 Homepage = "https://github.com/yeiichi/filesmith"
 Repository = "https://github.com/yeiichi/filesmith.git"
 Issues = "https://github.com/yeiichi/filesmith/issues"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["filesmith*"]
