@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,8 +7,12 @@ name = "filesmith"
 version = "0.4.0"
 description = "A collection of file manipulation and inspection utilities, including pattern-based file operations."
 
-[tool.setuptools.packages]
-find = { where = ["src"] }
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["filesmith*"]
 
 authors = [
     { name = "Eiichi YAMAMOTO", email = "info@yeiichi.com" },
