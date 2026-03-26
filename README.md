@@ -4,14 +4,7 @@
 ![Python versions](https://img.shields.io/pypi/pyversions/filesmith.svg)
 [![License](https://img.shields.io/pypi/l/filesmith.svg)](https://pypi.org/project/filesmith/)
 
-A command-line utility for copying files based on pattern matching, with support for filtering by modification time, plus a helper function for selecting uniquely matched files.
-
-## Overview
-
-Filesmith is a Python utility that helps you copy files from one directory to another based on regular expression
-patterns. It's particularly useful for selective file copying, backup operations, and automated file management tasks.
-
-It also includes `get_target_file`, a reliable helper for retrieving a single uniquely identified file by substring and optional extension filter.
+A collection of file manipulation and inspection utilities, including pattern-based file operations and knapsack-based file selection.
 
 ## Installation
 
@@ -23,81 +16,102 @@ pip install filesmith
 
 ## Usage (CLI)
 
+Filesmith provides a unified CLI with subcommands.
+
 ```bash
-filesmith <origin> <destination> <pattern> [options]
+filesmith <command> [arguments] [options]
 ```
 
-### Arguments
-- `origin`: The source directory.
-- `destination`: The destination directory.
-- `pattern`: The regex pattern to match filenames against.
+### 1. `find-move`
 
-### Options
-- `--newermt <file_or_isodate>`: Only copy files newer than a reference file's modification time or a given ISO date/datetime.
-- `-n`, `--dry-run`: Show which files would be copied without actually copying them.
-- `-q`, `--quiet`: Suppress output for successfully copied files.
+Find files and copy/move them.
 
-### Examples
+```bash
+filesmith find-move <src> <dst> [-p PATTERN] [-m {copy,move}] [-n] [-R]
+```
 
-1.  **Copy all .txt files from `source` to `dest`:**
-    ```bash
-    filesmith /path/to/source /path/to/dest ".*\.txt$"
-    ```
+- `src`: Source directory.
+- `dst`: Destination directory.
+- `-p`, `--pattern`: Glob pattern (default: `*`).
+- `-m`, `--mode`: `copy` or `move` (default: `copy`).
+- `-n`, `--dry-run`: Show what would be done.
+- `-R`, `--no-recursive`: Do NOT search recursively.
 
-2.  **Perform a dry run to see which .jpg files would be copied:**
-    ```bash
-    filesmith /path/to/source /path/to/dest ".*\.jpg$" --dry-run
-    ```
+**Example:**
+```bash
+filesmith find-move ./src ./backup -p "*.py"
+```
 
-3.  **Copy .log files newer than a specific date:**
-    ```bash
-    filesmith /path/to/logs /path/to/backup ".*\.log$" --newermt 2023-10-27T10:00:00
-    ```
+### 2. `knapsack`
 
-4.  **Copy .py files that are newer than `main.py`:**
-    ```bash
-    filesmith /path/to/src /path/to/old_src ".*\.py$" --newermt /path/to/src/main.py
-    ```
+Knapsack-related operations.
 
----
+#### `copy`
+Copy a subset of files to a destination without exceeding a total size capacity.
 
-## Python Utility: `get_target_file`
+```bash
+filesmith knapsack copy <src_dir> <dest_dir> <capacity> [-p PATTERN] [-n] [-R]
+```
 
-Filesmith includes a small but powerful helper function to locate **exactly one** matching file in a directory.
+**Example:**
+```bash
+# Copy up to 100MB of images
+filesmith knapsack copy ./photos ./usb-drive 104857600 -p "*.jpg"
+```
 
-### Usage
+#### `solve`
+Solve a general knapsack/subset-sum problem for integer items.
+
+```bash
+filesmith knapsack solve <capacity> <items...>
+```
+
+### 3. Legacy CLI
+
+The original regex-based copy tool is available via:
+
+```bash
+filesmith-legacy copy <origin> <destination> <pattern> [--newermt REF] [-n] [-q]
+```
+
+## Python API
+
+Filesmith can also be used as a Python library.
 
 ```python
-from filesmith import get_target_file
+from pathlib import Path
+from filesmith import get_target_file, copy_files, find_files, FindMoveJob
 
-file_path = get_target_file("/path/to/dir", "report", ".xlsx")
-print(file_path)
+# Locate a unique file
+path = get_target_file("./data", "report", ".xlsx")
+
+# Use the new job engine
+job = FindMoveJob(src_root=Path("./src"), dest_root=Path("./dst"), pattern="*.txt")
+job.run()
 ```
 
-### Features
+### Key Functions
 
-- Ensures **exactly one** match.
-- Raises `ValueError` if:
-  - No files match.
-  - More than one file matches.
-- Optional extension filtering:
-  ```python
-  get_target_file("data", "2024", ".csv")
-  ```
-
-This is ideal when processing pipelines rely on single expected inputs, such as weekly exports or naming‑convention‑based file detection.
+- `get_target_file(dir, key, ext)`: Finds exactly one matching file.
+- `find_files(root, pattern, recursive, predicate)`: Advanced file finding.
+- `copy_files(origin, destination, pattern, ...)`: Regex-based copy (legacy).
+- `run_knapsack(items, capacity)`: Solves the subset-sum problem.
+- `copy_files_by_capacity(src, dest, capacity, ...)`: Size-constrained copying.
 
 ---
 
 ## Changelog
 
-### 0.2.0
-- Added `get_target_file` utility.
-- Improved `copy_files`:
-  - Switched from `print` to structured `logging`.
-  - More robust handling of ISO datetime / file-based `--newermt` filtering.
-- Extended full test coverage (`pytest`).
+### 0.4.0
+- Refactored CLI into a unified `filesmith` command with subcommands: `find-move`, `knapsack`.
+- Added `filesmith-legacy` for the previous regex-based CLI.
+- Expanded Python API in `filesmith` package.
+- Improved internal structure (finder, transfer, engine).
 
 ### 0.3.0
-- Added new CLI: `filesmith-find-move`
-- Integrated core.copy_files with the new engine (finder / transfer / FindMoveJob)
+- Added new CLI: `filesmith-find-move`.
+- Integrated `core.copy_files` with the new engine.
+
+### 0.2.0
+- Added `get_target_file` utility.
+- Improved `copy_files` with structured logging and `--newermt` filtering.

@@ -6,7 +6,11 @@ import re
 import shutil
 from pathlib import Path
 
+from .knapsack import run_knapsack
 from .transfer import transfer_files
+
+
+from typing import Sequence
 
 
 def _get_mtime_threshold(newermt_value):
@@ -118,12 +122,12 @@ def copy_files(origin, destination, pattern, newermt=None, dry_run=False, quiet=
     if dry_run:
         # Always log in dry-run mode (even if quiet=True), as before
         for src, dst in ops:
-            logging.info("(Dry Run) Would copy: %s to %s", src, dst)
+            print(f"(Dry Run) Would copy: {src} to {dst}")
     else:
         if quiet:
             return
         for src, _dst in ops:
-            logging.info("Copied: %s", src)
+            print(f"Copied: {src}")
 
 
 def get_target_file(src_dir: str | Path, target_key: str, ext: str | None = None) -> Path:
@@ -147,42 +151,76 @@ def get_target_file(src_dir: str | Path, target_key: str, ext: str | None = None
     return files[0]
 
 
-def main():
+def main(argv: Sequence[str] | None = None) -> int:
     """
     Main function to parse arguments and call the copy_files function.
     """
     parser = argparse.ArgumentParser(
-        description="Copies files based on filename pattern."
+        description="Filesmith utility collection."
     )
-    parser.add_argument("origin", help="Origin directory")
-    parser.add_argument("destination", help="Destination directory")
-    parser.add_argument("pattern", help="Regex pattern for filenames")
-    parser.add_argument(
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    copy_parser = subparsers.add_parser(
+        "copy",
+        help="Copy files based on filename pattern.",
+    )
+    copy_parser.add_argument("origin", help="Origin directory")
+    copy_parser.add_argument("destination", help="Destination directory")
+    copy_parser.add_argument("pattern", help="Regex pattern for filenames")
+    copy_parser.add_argument(
         "--newermt",
         help="Copy only files newer than the specified file's modification time or a given ISO date/datetime.",
     )
-    parser.add_argument(
+    copy_parser.add_argument(
         "-n",
         "--dry-run",
         action="store_true",
         help="Show what files would be copied without actually copying them.",
     )
-    parser.add_argument(
+    copy_parser.add_argument(
         "-q",
         "--quiet",
         action="store_true",
         help="Suppress output of successfully copied files. Useful for cron jobs.",
     )
-    args = parser.parse_args()
-    copy_files(
-        args.origin,
-        args.destination,
-        args.pattern,
-        args.newermt,
-        args.dry_run,
-        args.quiet,
+
+    knapsack_parser = subparsers.add_parser(
+        "knapsack",
+        help="Solve a subset sum / knapsack problem for integer items.",
     )
+    knapsack_parser.add_argument(
+        "capacity",
+        type=int,
+        help="Maximum capacity / target sum.",
+    )
+    knapsack_parser.add_argument(
+        "items",
+        nargs="+",
+        type=int,
+        help="Item values to consider.",
+    )
+
+    args = parser.parse_args(argv)
+
+    if args.command == "copy":
+        copy_files(
+            args.origin,
+            args.destination,
+            args.pattern,
+            args.newermt,
+            args.dry_run,
+            args.quiet,
+        )
+        return 0
+
+    if args.command == "knapsack":
+        best_sum, subset = run_knapsack(args.items, args.capacity)
+        print(f"best_sum: {best_sum}")
+        print(f"subset: {subset}")
+        return 0
+
+    return 1
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

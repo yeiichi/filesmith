@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "filesmith"
-version = "0.3.0"
+version = "0.4.0"
 description = "A collection of file manipulation and inspection utilities, including pattern-based file operations."
 
 [tool.setuptools.packages.find]
@@ -35,8 +35,10 @@ dev = [
 ]
 
 [project.scripts]
-filesmith = "filesmith.core:main"
+filesmith = "filesmith.cli:main"
 filesmith-find-move = "filesmith.cli_findmove:main"
+filesmith-knapsack = "filesmith.cli_knapsack:main"
+filesmith-legacy = "filesmith.core:main"
 
 [project.urls]
 Homepage = "https://github.com/yeiichi/filesmith"
