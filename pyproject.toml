@@ -7,8 +7,8 @@ name = "filesmith"
 version = "0.4.0"
 description = "A collection of file manipulation and inspection utilities, including pattern-based file operations."
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.setuptools.packages]
+find = { where = ["src"] }
 
 authors = [
     { name = "Eiichi YAMAMOTO", email = "info@yeiichi.com" },
@@ -36,8 +36,6 @@ dev = [
 
 [project.scripts]
 filesmith = "filesmith.cli:main"
-filesmith-find-move = "filesmith.cli_findmove:main"
-filesmith-knapsack = "filesmith.cli_knapsack:main"
 filesmith-legacy = "filesmith.core:main"
 
 [project.urls]

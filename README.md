@@ -103,14 +103,10 @@ job.run()
 ## Changelog
 
 ### 0.4.0
-- Refactored CLI into a unified `filesmith` command with subcommands: `find-move`, `knapsack`.
+- Added unified `filesmith` command with subcommands: `find-move`, `knapsack`.
 - Added `filesmith-legacy` for the previous regex-based CLI.
 - Expanded Python API in `filesmith` package.
 - Improved internal structure (finder, transfer, engine).
-
-### 0.3.0
-- Added new CLI: `filesmith-find-move`.
-- Integrated `core.copy_files` with the new engine.
 
 ### 0.2.0
 - Added `get_target_file` utility.
