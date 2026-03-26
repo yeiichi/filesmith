@@ -31,7 +31,6 @@ dependencies = []
 [project.optional-dependencies]
 dev = [
     "pytest>=7.0",
-    "sphinx>=4.0",
 ]
 
 [project.scripts]
