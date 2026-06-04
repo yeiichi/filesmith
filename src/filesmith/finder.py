@@ -33,7 +33,7 @@ def find_files(
     root : Path
         Base directory to search.
     pattern : str
-        Glob pattern, e.g. "*.txt".
+        Glob pattern, e.g. ``*.txt``.
     recursive : bool
         If True, use rglob; else glob.
     predicate : Callable[[Path], bool], optional
