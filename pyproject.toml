@@ -42,6 +42,7 @@ filesmith-knapsack = "filesmith.cli_knapsack:main"
 filesmith-duplicates = "filesmith.cli_duplicates:main"
 
 [project.urls]
+Documentation = "https://filesmith.readthedocs.io/"
 Homepage = "https://github.com/yeiichi/filesmith"
 Repository = "https://github.com/yeiichi/filesmith.git"
 Issues = "https://github.com/yeiichi/filesmith/issues"
