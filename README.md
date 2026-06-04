@@ -14,6 +14,8 @@ You can install filesmith using pip:
 pip install filesmith
 ```
 
+Filesmith depends on Python 3.10+ and includes the shared `smith-utils` utility APIs.
+
 ## Usage (CLI)
 
 Filesmith provides a unified CLI with subcommands.
@@ -66,7 +68,39 @@ Solve a general knapsack/subset-sum problem for integer items.
 filesmith knapsack solve <capacity> <items...>
 ```
 
-### 3. Legacy CLI
+### 3. `duplicates`
+
+Find duplicate files by walking a directory up to an instructed depth and comparing SHA-256 digests via `smith-utils`.
+
+```bash
+filesmith duplicates <root> --maxdepth <depth> [-p PATTERN] [-o REPORT]
+```
+
+- `root`: Root directory to scan.
+- `--maxdepth`: Maximum directory depth to scan. Use `0` for files directly in `root`.
+- `-p`, `--pattern`: Glob pattern (default: `*`).
+- `-o`, `--output`: Text report path (default: `filesmith-duplicates.txt`).
+
+**Example:**
+```bash
+filesmith duplicates ./archive --maxdepth 2 -o duplicate-report.txt
+```
+
+The report format is line-oriented and tab-separated for downstream tasks:
+
+```text
+# filesmith duplicate report v1
+root	./archive
+maxdepth	2
+duplicate_groups	1
+duplicate_files	2
+wasted_bytes	1024
+group	1	sha256	...	size	1024	count	2
+file	1	1024	./archive/a.bin
+file	1	1024	./archive/copy/a.bin
+```
+
+### 4. Legacy CLI
 
 The original regex-based copy tool is available via:
 
@@ -77,6 +111,18 @@ filesmith-legacy copy <origin> <destination> <pattern> [--newermt REF] [-n] [-q]
 ## Python API
 
 Filesmith can also be used as a Python library.
+
+### Shared Utility APIs
+
+Filesmith re-exports common APIs from `smith-utils` for date parsing, numeric cleanup, text normalization, and string distance helpers.
+
+```python
+from filesmith import ensure_date, normalize_text, parse_numeric_value
+
+date = ensure_date("20231225")
+amount = parse_numeric_value("(1,250.50)")
+text = normalize_text("  Ｓｍｉｔｈ  Ｕｔｉｌｓ  ")
+```
 
 ### File Operations
 
@@ -134,6 +180,16 @@ copy_files(
     pattern=r"error_.*\.log",
     newermt="2023-01-01"
 )
+```
+
+#### Duplicate Detection
+Find duplicate files by content digest and write a downstream-friendly text report.
+
+```python
+from filesmith import find_duplicate_files, write_duplicate_report
+
+groups = find_duplicate_files("./archive", maxdepth=2)
+write_duplicate_report(groups, root="./archive", maxdepth=2, output_path="duplicates.txt")
 ```
 
 ### Optimization & Knapsack

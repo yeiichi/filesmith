@@ -11,17 +11,19 @@ authors = [
 ]
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
     "Topic :: System :: Filesystems",
 ]
-dependencies = []
+dependencies = [
+    "smith-utils>=0.3.1",
+]
 
 [project.optional-dependencies]
 dev = [
@@ -33,6 +35,7 @@ filesmith = "filesmith.cli:main"
 filesmith-legacy = "filesmith.core:main"
 filesmith-find-move = "filesmith.cli_findmove:main"
 filesmith-knapsack = "filesmith.cli_knapsack:main"
+filesmith-duplicates = "filesmith.cli_duplicates:main"
 
 [project.urls]
 Homepage = "https://github.com/yeiichi/filesmith"
@@ -45,3 +48,7 @@ package-dir = { "" = "src" }
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["filesmith*"]
+
+[tool.semantic_release]
+allow_zero_version = true
+version_toml = ["pyproject.toml:project.version"]

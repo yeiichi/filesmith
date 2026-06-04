@@ -9,6 +9,7 @@ def test_cli_help(capfd):
     assert "usage: filesmith" in out
     assert "find-move" in out
     assert "knapsack" in out
+    assert "duplicates" in out
 
 def test_cli_find_move_subcommand(tmp_path, capfd):
     src = tmp_path / "src"
@@ -59,3 +60,21 @@ def test_cli_knapsack_subcommand(tmp_path, capfd):
     assert "selected_total_size: 10" in out
     assert (dst / "small.txt").exists()
     assert not (dst / "large.txt").exists()
+
+def test_cli_duplicates_subcommand(tmp_path, capfd):
+    src = tmp_path / "src"
+    report = tmp_path / "reports" / "duplicates.txt"
+    src.mkdir()
+    (src / "a.txt").write_text("same")
+    (src / "b.txt").write_text("same")
+    (src / "unique.txt").write_text("different")
+
+    rc = main(["duplicates", str(src), "--maxdepth", "0", "-o", str(report)])
+
+    assert rc == 0
+    out, err = capfd.readouterr()
+    assert "duplicate_groups: 1" in out
+    assert "duplicate_files: 2" in out
+    assert "group\t1\tsha256\t" in out
+    assert report.exists()
+    assert "duplicate_groups\t1\n" in report.read_text()

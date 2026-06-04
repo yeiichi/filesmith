@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 from typing import Sequence
 
+from .cli_duplicates import add_duplicates_subparser
 from .cli_findmove import add_find_move_subparser
 from .cli_knapsack import add_knapsack_subparser
 
@@ -13,6 +14,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     add_find_move_subparser(subparsers)
     add_knapsack_subparser(subparsers)
+    add_duplicates_subparser(subparsers)
 
     return parser
 
