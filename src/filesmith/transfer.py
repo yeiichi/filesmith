@@ -10,7 +10,7 @@ It copies or moves them with simple conflict policies.
 
 from __future__ import annotations
 from pathlib import Path
-from typing import Literal, Sequence
+from typing import Iterable, Literal
 import shutil
 
 TransferMode = Literal["copy", "move"]
@@ -18,7 +18,7 @@ OnConflict = Literal["skip", "overwrite", "error"]
 
 
 def transfer_files(
-    files: Sequence[Path],
+    files: Iterable[Path],
     dest_root: Path,
     mode: TransferMode = "copy",
     on_conflict: OnConflict = "skip",
@@ -29,7 +29,7 @@ def transfer_files(
 
     Parameters
     ----------
-    files : Sequence[Path]
+    files : Iterable[Path]
         Files to transfer.
     dest_root : Path
         Output directory (created if missing).

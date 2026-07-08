@@ -32,7 +32,7 @@ class FindMoveJob:
     def run(self):
         files = find_files(
             self.src_root,
-            pattern=self.pattern,
+            glob_pattern=self.pattern,
             recursive=self.recursive,
         )
 

@@ -134,7 +134,7 @@ from pathlib import Path
 from filesmith import find_files, transfer_files
 
 # Find all Python files recursively
-files = find_files(Path("./src"), pattern="*.py", recursive=True)
+files = find_files(Path("./src"), glob_pattern="*.py", recursive=True)
 
 # Transfer them to a backup folder (copy or move)
 transfer_files(files, Path("./backup"), mode="copy", on_conflict="skip")

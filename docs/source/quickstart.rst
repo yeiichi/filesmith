@@ -17,7 +17,7 @@ The same operation is available through the Python API:
    from pathlib import Path
    from filesmith import find_files, transfer_files
 
-   files = find_files(Path("./src"), pattern="*.py", recursive=True)
+   files = find_files(Path("./src"), glob_pattern="*.py", recursive=True)
    transfer_files(files, Path("./backup"), mode="copy", on_conflict="skip")
 
 Find duplicate files

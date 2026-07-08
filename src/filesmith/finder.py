@@ -14,48 +14,51 @@ Future extensions may include:
 
 from __future__ import annotations
 from pathlib import Path
-from typing import Callable, Iterable, Optional
+from typing import Callable, Iterator, Optional
 
 PathPredicate = Callable[[Path], bool]
 
 
 def find_files(
-    root: Path,
-    pattern: str = "*",
+    root: Path | str,
+    glob_pattern: str = "*",
     recursive: bool = True,
     predicate: Optional[PathPredicate] = None,
-) -> list[Path]:
+    *,
+    pattern: str | None = None,
+) -> Iterator[Path]:
     """
-    Find files under `root` using glob or rglob and optional filtering.
+    Lazily find files under `root` using glob syntax and optional filtering.
 
     Parameters
     ----------
-    root : Path
+    root : Path | str
         Base directory to search.
-    pattern : str
+    glob_pattern : str
         Glob pattern, e.g. ``*.txt``.
     recursive : bool
-        If True, use rglob; else glob.
+        If True, use ``Path.rglob()``; else ``Path.glob()``.
     predicate : Callable[[Path], bool], optional
         Optional per-file test. If provided, keep only files where predicate(file) is True.
+    pattern : str, optional
+        Deprecated compatibility alias for ``glob_pattern``.
 
     Returns
     -------
-    list[Path]
-        Matching files.
+    Iterator[Path]
+        Lazy iterator of matching files.
     """
+    if pattern is not None:
+        if glob_pattern != "*":
+            raise ValueError("Use either glob_pattern or pattern, not both.")
+        glob_pattern = pattern
 
     root = Path(root).expanduser()
+    paths = root.rglob(glob_pattern) if recursive else root.glob(glob_pattern)
 
-    iterator: Iterable[Path]
-    iterator = root.rglob(pattern) if recursive else root.glob(pattern)
-
-    results: list[Path] = []
-    for p in iterator:
-        if not p.is_file():
+    for path in paths:
+        if not path.is_file():
             continue
-        if predicate and not predicate(p):
+        if predicate and not predicate(path):
             continue
-        results.append(p)
-
-    return results
+        yield path

@@ -83,7 +83,7 @@ def copy_files_by_capacity(
     dest_dir = Path(dest_dir).expanduser()
 
     # 1. Find all files
-    all_files = find_files(src_dir, pattern=pattern, recursive=recursive)
+    all_files = list(find_files(src_dir, glob_pattern=pattern, recursive=recursive))
 
     # 2. Select files by capacity
     total_size, selected_files = select_files_by_capacity(all_files, capacity)
