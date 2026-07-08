@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "filesmith"
-version = "0.6.0"
+version = "0.6.1"
 description = "A collection of file manipulation and inspection utilities, including pattern-based file operations."
 authors = [
     { name = "Eiichi YAMAMOTO", email = "info@yeiichi.com" },
