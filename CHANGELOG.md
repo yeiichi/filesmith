@@ -2,6 +2,22 @@
 
 <!-- version list -->
 
+## v0.6.0 (2026-07-08)
+
+### Chores
+
+- Add documentation project link
+  ([`158adf6`](https://github.com/yeiichi/filesmith/commit/158adf62d51c8df57ea9a58c47ae6640754d03de))
+
+- Refresh lockfile for release
+  ([`c80f9a6`](https://github.com/yeiichi/filesmith/commit/c80f9a66d97935fa8961938baa43e05342ccd091))
+
+### Features
+
+- Make find_files lazy
+  ([`7d109a1`](https://github.com/yeiichi/filesmith/commit/7d109a119e348063bf2ef3bcfd2d8c2ca50e29f1))
+
+
 ## v0.5.0 (2026-06-04)
 
 ### Chores

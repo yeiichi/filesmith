@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "filesmith"
-version = "0.5.0"
+version = "0.6.0"
 description = "A collection of file manipulation and inspection utilities, including pattern-based file operations."
 authors = [
     { name = "Eiichi YAMAMOTO", email = "info@yeiichi.com" },
