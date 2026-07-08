@@ -4,6 +4,7 @@
 venv/
 *.env
 .env
+.uv-cache/
 
 # === 2. Python Bytecode and Metadata ===
 # Compiled Python files
@@ -36,6 +37,7 @@ build/
 # but the generated HTML/PDF output should be ignored.
 # Assuming 'source/' is the input and 'build' is the output (standard Sphinx).
 docs/_build/
+docs/build/
 _build/
 
 # === 5. Operating System Generated Files ===

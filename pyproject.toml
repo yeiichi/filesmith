@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
 
 [project]
 name = "filesmith"
@@ -47,12 +47,16 @@ Homepage = "https://github.com/yeiichi/filesmith"
 Repository = "https://github.com/yeiichi/filesmith.git"
 Issues = "https://github.com/yeiichi/filesmith/issues"
 
-[tool.setuptools]
-package-dir = { "" = "src" }
+[tool.hatch.build]
+exclude = [
+    "/.uv-cache",
+    "/.venv",
+    "/dist",
+    "/docs/build",
+]
 
-[tool.setuptools.packages.find]
-where = ["src"]
-include = ["filesmith*"]
+[tool.hatch.build.targets.wheel]
+packages = ["src/filesmith"]
 
 [tool.semantic_release]
 allow_zero_version = true
